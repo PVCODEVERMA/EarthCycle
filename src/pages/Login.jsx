@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { toast } from "react-toastify";
-import axios from "../api/axios";
 import { motion } from "framer-motion";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 
@@ -11,18 +11,18 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // ✅ Handle input changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const response = await axios.post(
-        "/auth/login",
+        "http://localhost:3000/api/auth/login",
         formData,
         {
           withCredentials: true,
@@ -33,46 +33,54 @@ const Login = () => {
       );
 
       const data = response.data;
+      console.log("Login Response Data:", data);
 
-      // Store tokens and user data
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data));
+      const { accessToken } = data;
+      if (!accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data));
+      }
+      console.log("Access Token:", response.data.accessToken);
 
       toast.success("Login successful! Redirecting...");
 
-      // Role-based redirect
-      const role = data.role;
+      // Redirect based on role
+      const { role } = data;
+      console.log("User Role:", role);
       setTimeout(() => {
-        if (role === "user") {
-          navigate("/dashboard");
-        } else if (role === "team-admin") {
-          navigate("/team-dashboard");
-        } else if (role === "super-admin") {
-          navigate("/super-admin-dashboard");
-        } else {
-          navigate("/dashboard"); // fallback
+        switch (data.role) {
+          case "user":
+            navigate("/dashboard");
+            break;
+          case "team-admin":
+            navigate("/team-dashboard");
+            break;
+          case "super-admin":
+            navigate("/super-admin-dashboard");
+            break;
+          default:
+            navigate("/");
         }
       }, 1500);
     } catch (error) {
       if (error.response) {
-        // API returned an error with JSON response
+        // API error with JSON response
+        console.error("API Error:", error.response.data);
         const errorMessage = error.response.data?.error || "Login failed";
-        console.error("API error:", error.response.data);
         toast.error(errorMessage);
       } else if (error.request) {
-        // Request was made but no response received
+        // No response received
         console.error("No response received:", error.request);
-        toast.error("No response from server. Please check your backend.");
+        toast.error("No response from server. Please check backend.");
       } else {
         // Error setting up request
-        console.error("Error:", error.message);
-        toast.error("Something went wrong. Please try again later.");
+        console.error("Login error:", error.message);
+        toast.error("Something went wrong. Try again later.");
       }
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-blue-100 to-purple-100">
       <motion.div
