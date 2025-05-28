@@ -1,23 +1,31 @@
-// src/component/layout/Layout.jsx
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../../components/common/Navbar.jsx";
-
 import Footer from "./Footer.jsx";
 import ScrollToTop from "../../components/common/ScrollToTop.jsx";
 import ChatBot from "../../components/common/ChatBot.jsx";
 
 const Layout = () => {
+  const location = useLocation();
+
+  // Routes where layout components (Navbar, Footer, ChatBot) should be hidden
+  const hideLayoutOnPaths = [
+    "/admin/dashboard",
+    "/team/dashboard",
+    "/user/dashboard",
+  ];
+
+  const shouldHideLayout = hideLayoutOnPaths.includes(location.pathname);
+
   return (
     <>
-      <Navbar />
+      {!shouldHideLayout && <Navbar />}
       <main>
         <Outlet />
       </main>
       <ScrollToTop />
-       <Footer />
-      <ChatBot />
-     
+      {!shouldHideLayout && <Footer />}
+      {!shouldHideLayout && <ChatBot />}
     </>
   );
 };

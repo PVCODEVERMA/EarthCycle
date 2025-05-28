@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./component/Loading";
-import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 
 // Lazy-loaded pages
@@ -34,11 +34,19 @@ const LearnMore = React.lazy(() => import("./pages/LearnMore"));
 const Shop = React.lazy(() => import("./pages/Shop"));
 const RequestQuote = React.lazy(() => import("./pages/RequestQuote"));
 const Layout = React.lazy(() => import("./component/layout/Layout"));
-const Dashboard = React.lazy(() => import("./dashboard/UserDashboard.jsx"));
+const UserDashboard = React.lazy(() => import("./dashboard/UserDashboard.jsx"));
 const TeamDashboard = React.lazy(() => import("./dashboard/TeamDashboard"));
-const SuperAdminDashboard = React.lazy(() =>
-  import("./dashboard/SuperAdminDashboard")
+const AdminDashboard = React.lazy(() => import("./dashboard/AdminDashboard"));
+
+const RecyclingPage = React.lazy(() => import("./userPages/RecyclingPage.jsx"));
+const DocumentsPage = React.lazy(() => import("./userPages/DocumentsPage.jsx"));
+const PaymentHistory = React.lazy(() =>
+  import("./userPages/PaymentHistory.jsx")
 );
+const SupportCenter = React.lazy(() => import("./userPages/SupportCenter.jsx"));
+const SettingsPage = React.lazy(() => import("./userPages/SettingsPage.jsx"));
+const NewService = React.lazy(() => import("./userPages/NewService.jsx"))
+
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
@@ -71,21 +79,38 @@ const App = () => {
           <Route path="shop" element={<Shop />} />
           <Route path="requestQuote" element={<RequestQuote />} />
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-            <Route path="dashboard" element={<Dashboard />} />
-          </Route>
+          <Route path="/recycling" element={<RecyclingPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/payment-history" element={<PaymentHistory />} />
+          <Route path="/support" element={<SupportCenter />} />
+          <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/new-service" element={<NewService />} />
 
-          <Route element={<ProtectedRoute allowedRoles={["team-admin"]} />}>
-            <Route path="team-dashboard" element={<TeamDashboard />} />
-          </Route>
-
-          <Route element={<ProtectedRoute allowedRoles={["super-admin"]} />}>
-            <Route
-              path="super-admin-dashboard"
-              element={<SuperAdminDashboard />}
-            />
-          </Route>
+          {/* Role-Based Protected Routes */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/team/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["team-admin"]}>
+                <TeamDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["user"]}>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Fallback Routes */}
           <Route path="/unauthorized" element={<Unauthorized />} />

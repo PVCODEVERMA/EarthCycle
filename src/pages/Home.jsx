@@ -1,4 +1,3 @@
-
 import Header from "../component/layout/Header.jsx";
 import ServicesSection from "./ServicesSection.jsx";
 import BusinessSection from "./BusinessSection.jsx";
@@ -17,9 +16,7 @@ const Home = () => {
       <ServicesSection />
       <BusinessSection />
       <WasteService />
-      {/* <BackgroundBeamsWithCollision> */}
-        <WasteServices />
-      {/* </BackgroundBeamsWithCollision> */}
+      <WasteServices />
       <StatsSection />
       <WhyChooseUs />
       <TestimonialSlider />

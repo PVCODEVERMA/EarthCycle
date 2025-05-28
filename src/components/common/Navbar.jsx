@@ -8,12 +8,9 @@ import {
 import {
   PhoneIcon,
   EnvelopeIcon,
-  ClockIcon,
-  MapPinIcon,
 } from "@heroicons/react/24/outline";
 import { FaFacebookF, FaTwitter, FaYoutube } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
-
 import {
   HomeIcon,
   BuildingOfficeIcon,
@@ -37,6 +34,8 @@ export default function Navbar() {
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add authentication state
+  
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -90,6 +89,11 @@ export default function Navbar() {
     setSearchOpen(false);
   };
 
+  const handleLogout = () => {
+    // Add logout logic
+    setIsLoggedIn(false);
+  };
+
   return (
     <>
       {/* Top Header Section */}
@@ -101,7 +105,6 @@ export default function Navbar() {
               <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-4">
                 <div className="relative overflow-x-auto sm:overflow-visible flex-1">
                   <div className="flex items-center gap-3 sm:gap-4 animate-scroll-x sm:animate-none whitespace-nowrap w-max">
-                    {/* Phone Number */}
                     <span className="flex items-center gap-1 flex-shrink-0">
                       <div className="relative">
                         <PhoneIcon className="w-4 h-4 text-black animate-pulse-slow" />
@@ -124,7 +127,7 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* Social Icons - Visible on Mobile */}
+                {/* Mobile Social Icons */}
                 <div className="flex gap-2 sm:hidden">
                   {[FaFacebookF, FaTwitter, FaYoutube].map((Icon, i) => (
                     <a
@@ -139,7 +142,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Social Icons - Hidden on Mobile, Visible on Desktop */}
+            {/* Desktop Social Icons */}
             <div className="hidden sm:flex gap-2 lg:ml-4">
               {[FaFacebookF, FaTwitter, FaYoutube].map((Icon, i) => (
                 <a
@@ -170,16 +173,15 @@ export default function Navbar() {
           )}
         </button>
 
-        {/* Logo - Left Aligned */}
+        {/* Logo */}
         <Link
           to="/"
           className="text-2xl font-bold text-gray-800 cursor-pointer hover:text-[#E4a400] transition-colors"
         >
-          <img className="h-14 w-20" src={logo} alt="" />
+          <img className="h-14 w-20" src={logo} alt="Company Logo" />
         </Link>
 
-         <Link to='/login' className="lg:hidden btn">login</Link>
-        {/* Desktop Navigation - Centered */}
+        {/* Desktop Navigation */}
         <nav
           className="hidden lg:flex items-center gap-8 relative z-[99] lg:absolute lg:left-1/2 lg:-translate-x-1/2"
           ref={dropdownRef}
@@ -233,7 +235,7 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Desktop Right Section - Right Aligned */}
+        {/* Desktop Right Section */}
         <div className="hidden lg:flex items-center gap-6">
           <div className="relative" ref={searchRef}>
             <form
@@ -270,12 +272,25 @@ export default function Navbar() {
               </button>
             </form>
           </div>
-          <Link
-            to="/login"
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-[#E4A400] transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95 focus:ring-4 focus:ring-green-200 focus:ring-opacity-50"
-          >
-            login
-          </Link>
+          
+          {/* Login/Logout Button */}
+          <div className="hidden lg:flex items-center gap-6">
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95 focus:ring-4 focus:ring-red-200 focus:ring-opacity-50"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-[#E4A400] transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95 focus:ring-4 focus:ring-green-200 focus:ring-opacity-50"
+              >
+                Login
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Mobile Menu Overlay */}
@@ -295,8 +310,9 @@ export default function Navbar() {
               <Link
                 to="/"
                 className="text-2xl font-bold text-gray-800 cursor-pointer hover:text-[#E4a400] transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                <img className="h-14 w-20" src={logo} alt="" />
+                <img className="h-14 w-20" src={logo} alt="Company Logo" />
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -329,25 +345,12 @@ export default function Navbar() {
                         className="flex justify-between items-center w-full text-gray-600 hover:text-[#E4a400]"
                       >
                         <div className="flex items-center gap-2">
-                          {/* Add icons for main menu items */}
-                          {item.name === "Home" && (
-                            <HomeIcon className="w-5 h-5" />
-                          )}
-                          {item.name === "Company" && (
-                            <BuildingOfficeIcon className="w-5 h-5" />
-                          )}
-                          {item.name === "Services" && (
-                            <WrenchScrewdriverIcon className="w-5 h-5" />
-                          )}
-                          {item.name === "Blog" && (
-                            <NewspaperIcon className="w-5 h-5" />
-                          )}
-                          {item.name === "Shop" && (
-                            <ShoppingBagIcon className="w-5 h-5" />
-                          )}
-                          {item.name === "About" && (
-                            <InformationCircleIcon className="w-5 h-5" />
-                          )}
+                          {item.name === "Home" && <HomeIcon className="w-5 h-5" />}
+                          {item.name === "Company" && <BuildingOfficeIcon className="w-5 h-5" />}
+                          {item.name === "Services" && <WrenchScrewdriverIcon className="w-5 h-5" />}
+                          {item.name === "Blog" && <NewspaperIcon className="w-5 h-5" />}
+                          {item.name === "Shop" && <ShoppingBagIcon className="w-5 h-5" />}
+                          {item.name === "About" && <InformationCircleIcon className="w-5 h-5" />}
                           <span>{item.name}</span>
                         </div>
                         <RiArrowDropDownLine
@@ -365,22 +368,11 @@ export default function Navbar() {
                               className="flex items-center gap-2 text-gray-600 hover:text-[#E4a400]"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
-                              {/* Add icons for submenu items */}
-                              {subItem.name === "Team" && (
-                                <UserGroupIcon className="w-5 h-5" />
-                              )}
-                              {subItem.name === "Mission" && (
-                                <FlagIcon className="w-5 h-5" />
-                              )}
-                              {subItem.name === "Contact" && (
-                                <ChatBubbleLeftIcon className="w-5 h-5" />
-                              )}
-                              {subItem.name === "Residential Waste" && (
-                                <TrashIcon className="w-5 h-5" />
-                              )}
-                              {subItem.name === "Industrial Waste" && (
-                                <BuildingLibraryIcon className="w-5 h-5" />
-                              )}
+                              {subItem.name === "Team" && <UserGroupIcon className="w-5 h-5" />}
+                              {subItem.name === "Mission" && <FlagIcon className="w-5 h-5" />}
+                              {subItem.name === "Contact" && <ChatBubbleLeftIcon className="w-5 h-5" />}
+                              {subItem.name === "Residential Waste" && <TrashIcon className="w-5 h-5" />}
+                              {subItem.name === "Industrial Waste" && <BuildingLibraryIcon className="w-5 h-5" />}
                               <span>{subItem.name}</span>
                             </Link>
                           ))}
@@ -393,17 +385,10 @@ export default function Navbar() {
                       className="flex items-center gap-2 text-gray-600 hover:text-[#E4a400]"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      {/* Add icons for simple menu items */}
                       {item.name === "Home" && <HomeIcon className="w-5 h-5" />}
-                      {item.name === "Blog" && (
-                        <NewspaperIcon className="w-5 h-5" />
-                      )}
-                      {item.name === "Shop" && (
-                        <ShoppingBagIcon className="w-5 h-5" />
-                      )}
-                      {item.name === "About" && (
-                        <InformationCircleIcon className="w-5 h-5" />
-                      )}
+                      {item.name === "Blog" && <NewspaperIcon className="w-5 h-5" />}
+                      {item.name === "Shop" && <ShoppingBagIcon className="w-5 h-5" />}
+                      {item.name === "About" && <InformationCircleIcon className="w-5 h-5" />}
                       <span>{item.name}</span>
                     </Link>
                   )}

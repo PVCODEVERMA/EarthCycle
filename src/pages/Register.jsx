@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 
+
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -23,40 +24,45 @@ const Register = () => {
     phone: "",
     role: "user",
   });
+  console.log("formData:",formData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-        credentials: "include",
-      });
+  try {
+    const response = await fetch("http://localhost:3000/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        toast.error(`Error: ${errorData?.error || "Registration failed"}`);
-        return;
-      }
+    const data = await response.json();
 
-      toast.success("Registration successful! You can now log in.");
-      navigate("/login");
-    } catch (error) {
-      console.error("Fetch error:", error);
-      toast.error("Something went wrong, please try again later.");
-    } finally {
-      setIsSubmitting(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
     }
-  };
+
+    toast.success("Registration successful!");
+    navigate("/login"); // Redirect to login after success
+  } catch (error) {
+    console.error("Registration error:", error);
+    toast.error(error.message || "Something went wrong, please try again.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-200 via-blue-200 to-indigo-200 animate-gradient-x">
