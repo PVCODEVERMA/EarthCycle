@@ -805,13 +805,7 @@ const UserDashboard = () => {
         </div>
       </div>
       
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white p-6 mt-12">
-        <div className="max-w-6xl mx-auto text-center">
-          <p>© 2023 WasteWise. All rights reserved.</p>
-          <p className="text-gray-400 text-sm mt-2">Making waste management simple and efficient</p>
-        </div>
-      </footer>
+    
     </div>
   );
 };

@@ -1264,7 +1264,7 @@ const AdminDashboard = () => {
               <div className="bg-green-600 text-white p-2 rounded-lg">
                 <FaTachometerAlt className="text-xl" />
               </div>
-              <span className="ml-3 text-xl font-bold">WasteWise Admin</span>
+              <span className="ml-3 text-xl font-bold">Admin</span>
             </div>
             
             <div className="flex items-center">

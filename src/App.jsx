@@ -4,6 +4,12 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./component/Loading";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import DashboardTab from "./userPages/DashboardTab.jsx";
+import BookingDetails from "./userPages/BookingDetails.jsx";
+import LiveTracking from "./userPages/LiveTracking.jsx";
+import BookingHistory from "./userPages/BookingHistory.jsx";
+import AccountSettings from "./userPages/AccountSettings.jsx";
+import Profile from "./userPages/Profile.jsx";
 
 
 // Lazy-loaded pages
@@ -34,21 +40,19 @@ const LearnMore = React.lazy(() => import("./pages/LearnMore"));
 const Shop = React.lazy(() => import("./pages/Shop"));
 const RequestQuote = React.lazy(() => import("./pages/RequestQuote"));
 const Layout = React.lazy(() => import("./component/layout/Layout"));
-const UserDashboard = React.lazy(() => import("./dashboard/UserDashboard.jsx"));
 const TeamDashboard = React.lazy(() => import("./dashboard/TeamDashboard"));
 const AdminDashboard = React.lazy(() => import("./dashboard/AdminDashboard"));
 
-const RecyclingPage = React.lazy(() => import("./userPages/RecyclingPage.jsx"));
+
 const DocumentsPage = React.lazy(() => import("./userPages/DocumentsPage.jsx"));
-const PaymentHistory = React.lazy(() =>
-  import("./userPages/PaymentHistory.jsx")
-);
+
 const SupportCenter = React.lazy(() => import("./userPages/SupportCenter.jsx"));
-const SettingsPage = React.lazy(() => import("./userPages/SettingsPage.jsx"));
+
 const NewService = React.lazy(() => import("./userPages/NewService.jsx"))
 
 const Unauthorized = React.lazy(() => import("./pages/Unauthorized"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
+
 
 const App = () => {
   return (
@@ -79,12 +83,16 @@ const App = () => {
           <Route path="shop" element={<Shop />} />
           <Route path="requestQuote" element={<RequestQuote />} />
 
-          <Route path="/recycling" element={<RecyclingPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/payment-history" element={<PaymentHistory />} />
+         
           <Route path="/support" element={<SupportCenter />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/new-service" element={<NewService />} />
+          <Route path="/booking-det" element={<BookingDetails />} />
+          <Route path="/live-tracking" element={<LiveTracking />} />
+          <Route path="/user/History" element={<BookingHistory />} />
+          <Route path="/accountSettings" element={<AccountSettings  />} />
+          <Route path="user/profile" element={<Profile  />} />
+          <Route path="user/dashboard" element={<DashboardTab />} />
 
           {/* Role-Based Protected Routes */}
           <Route
@@ -104,10 +112,11 @@ const App = () => {
             }
           />
           <Route
-            path="/user/dashboard"
+            path="/user/DashboardTab"
             element={
               <ProtectedRoute allowedRoles={["user"]}>
-                <UserDashboard />
+                {/* <UserDashboard /> */}
+                <DashboardTab />
               </ProtectedRoute>
             }
           />

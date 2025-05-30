@@ -10,6 +10,7 @@ import logo from '../../assets/logo.png';
 
 export default function Footer() {
   return (
+    <>
     <div className="relative overflow-hidden bg-black text-white">
       {/* Background animation */}
       <Squares
@@ -197,5 +198,15 @@ export default function Footer() {
         </div>
       </footer>
     </div>
+      
+      <footer className="bg-gray-800 text-white p-2">
+        <div className="max-w-6xl mx-auto text-center">
+          <p>© 2025 WasteWise. All rights reserved.</p>
+          <p className="text-gray-400 text-sm mt-2">Making waste management simple and efficient</p>
+        </div>
+      </footer>
+
+      </>
+
   );
 }

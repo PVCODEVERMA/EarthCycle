@@ -1,22 +1,25 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   MagnifyingGlassIcon,
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
+import { PhoneIcon, EnvelopeIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { FaFacebookF, FaHistory, FaTruck, FaTwitter, FaYoutube } from "react-icons/fa";
+
 import {
-  PhoneIcon,
-  EnvelopeIcon,
-} from "@heroicons/react/24/outline";
-import { FaFacebookF, FaTwitter, FaYoutube } from "react-icons/fa";
-import { RiArrowDropDownLine } from "react-icons/ri";
+  RiArrowDropDownLine,
+  RiLoginBoxLine,
+  RiUserLine,
+  RiSettings3Line,
+  RiLogoutBoxLine,
+} from "react-icons/ri";
 import {
   HomeIcon,
   BuildingOfficeIcon,
   WrenchScrewdriverIcon,
   NewspaperIcon,
-  ShoppingBagIcon,
   InformationCircleIcon,
   UserGroupIcon,
   FlagIcon,
@@ -27,6 +30,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import logo from "../../assets/logo.png";
+import { toast } from "react-toastify";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -34,8 +38,16 @@ export default function Navbar() {
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add authentication state
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [userData, setUserData] = useState({
+    name: "Rajesh Kumar",
+    email: "rajesh@example.com",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+  });
+  const userDropdownRef = useRef(null);
+  const navigate = useNavigate();
+
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -63,6 +75,18 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+
+    // Fetch user data from localStorage or API
+    const storedUser = localStorage.getItem("user");
+    // if (storedUser) {
+    //   setUserData(JSON.parse(storedUser));
+    // } else {
+      // Set default user data
+      localStorage.setItem("user", JSON.stringify(userData));
+    // }
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpenDropdown(null);
@@ -77,6 +101,9 @@ export default function Navbar() {
       ) {
         setIsMobileMenuOpen(false);
       }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -90,8 +117,23 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    // Add logout logic
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setIsLoggedIn(false);
+    navigate("/");
+    toast.success("Logout successfully!!");
+    setUserDropdownOpen(false);
+  };
+
+  const handleProfileNavigation = (path) => {
+    navigate(path);
+    setUserDropdownOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+  const handleHistoryNavigation = (path) => {
+    navigate(path);
+    setUserDropdownOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -159,7 +201,7 @@ export default function Navbar() {
       </header>
 
       {/* Main Navigation Section */}
-      <div className="bg-white shadow-sm py-2 lg:py-4 px-4 sm:px-6 flex items-center justify-between relative">
+      <div className="bg-white shadow-sm py-2 lg:py-4 px-4 sm:px-6 flex justify-between items-center relative">
         {/* Mobile Menu Button */}
         <button
           className="lg:hidden p-2 rounded-lg hover:bg-gray-100 mobile-menu-button"
@@ -180,6 +222,66 @@ export default function Navbar() {
         >
           <img className="h-14 w-20" src={logo} alt="Company Logo" />
         </Link>
+
+        <nav className="flex items-center space-x-6 lg:hidden">
+          {/* Mobile Cart */}
+          <Link to="/cart" className="relative p-2 text-gray-600 hover:text-green-500 transition-colors">
+            <ShoppingBagIcon className="h-6 w-6" />
+          </Link>
+          
+          {!isLoggedIn ? (
+            <Link
+              to="/login"
+              className="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition-all flex items-center gap-2"
+            >
+              <RiLoginBoxLine className="text-xl" />
+            </Link>
+          ) : (
+            <div className="relative" ref={userDropdownRef}>
+              <button
+                onClick={() => setUserDropdownOpen((prev) => !prev)}
+                className="flex items-center gap-1 text-gray-800 hover:text-green-600 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed flex items-center justify-center">
+                  <RiUserLine className="text-lg" />
+                </div>
+              </button>
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-5 w-48 bg-white border rounded-md shadow-lg z-50">
+                  <div className="px-4 py-3 border-b">
+                    <p className="text-sm font-medium">{userData.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{userData.email}</p>
+                  </div>
+                  <button
+                    onClick={() => handleProfileNavigation("/user/profile")}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <RiUserLine className="text-lg" /> My Profile
+                  </button>
+                 
+                  <button
+                    onClick={() => handleProfileNavigation("/user/dashboard")}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <FaTruck className="text-lg" />  Dashboard
+                  </button>
+                  <button
+                    onClick={() => handleHistoryNavigation("/user/History")}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <FaHistory className="text-lg" /> Booking History
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    <RiLogoutBoxLine className="text-lg" /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </nav>
 
         {/* Desktop Navigation */}
         <nav
@@ -272,25 +374,66 @@ export default function Navbar() {
               </button>
             </form>
           </div>
-          
-          {/* Login/Logout Button */}
-          <div className="hidden lg:flex items-center gap-6">
-            {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95 focus:ring-4 focus:ring-red-200 focus:ring-opacity-50"
-              >
-                Logout
-              </button>
-            ) : (
+
+          {/* Desktop Shopping Cart */}
+          <Link to="/cart" className="relative p-2 text-gray-600 hover:text-green-500 transition-colors">
+            <ShoppingBagIcon className="h-6 w-6" />
+          </Link>
+
+          <nav className="hidden lg:flex items-center space-x-6">
+            {!isLoggedIn ? (
               <Link
                 to="/login"
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-[#E4A400] transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95 focus:ring-4 focus:ring-green-200 focus:ring-opacity-50"
+                className="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition-all flex items-center gap-2"
               >
-                Login
+                <RiLoginBoxLine className="text-xl" />
               </Link>
+            ) : (
+             <div className="relative" ref={userDropdownRef}>
+              <button
+                onClick={() => setUserDropdownOpen((prev) => !prev)}
+                className="flex items-center gap-1 text-gray-800 hover:text-green-600 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed flex items-center justify-center">
+                  <RiUserLine className="text-lg" />
+                </div>
+              </button>
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-7 w-48 bg-white border rounded-md shadow-lg z-50">
+                  <div className="px-4 py-3 border-b">
+                    <p className="text-sm font-medium">{userData.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{userData.email}</p>
+                  </div>
+                  <button
+                    onClick={() => handleProfileNavigation("/user/profile")}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <RiUserLine className="text-lg" /> My Profile
+                  </button>
+                 
+                  <button
+                    onClick={() => handleProfileNavigation("/user/dashboard")}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <FaTruck className="text-lg" />  Dashboard
+                  </button>
+                  <button
+                    onClick={() => handleHistoryNavigation("/user/History")}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <FaHistory className="text-lg" /> Booking History
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    <RiLogoutBoxLine className="text-lg" /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
             )}
-          </div>
+          </nav>
         </div>
 
         {/* Mobile Menu Overlay */}
@@ -322,6 +465,27 @@ export default function Navbar() {
               </button>
             </div>
 
+            {/* User Profile Section in Mobile Menu */}
+            {isLoggedIn && (
+              <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 rounded-full bg-gray-200 border-2 border-dashed overflow-hidden">
+                  {userData.avatar ? (
+                    <img 
+                      src={userData.avatar} 
+                      alt="User" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <RiUserLine className="w-full h-full p-2 text-gray-500" />
+                  )}
+                </div>
+                <div>
+                  <p className="font-medium">{userData.name}</p>
+                  <p className="text-sm text-gray-500">{userData.email}</p>
+                </div>
+              </div>
+            )}
+
             <nav className="flex-1 space-y-4 overflow-y-auto">
               <Link
                 to="/booking"
@@ -345,12 +509,24 @@ export default function Navbar() {
                         className="flex justify-between items-center w-full text-gray-600 hover:text-[#E4a400]"
                       >
                         <div className="flex items-center gap-2">
-                          {item.name === "Home" && <HomeIcon className="w-5 h-5" />}
-                          {item.name === "Company" && <BuildingOfficeIcon className="w-5 h-5" />}
-                          {item.name === "Services" && <WrenchScrewdriverIcon className="w-5 h-5" />}
-                          {item.name === "Blog" && <NewspaperIcon className="w-5 h-5" />}
-                          {item.name === "Shop" && <ShoppingBagIcon className="w-5 h-5" />}
-                          {item.name === "About" && <InformationCircleIcon className="w-5 h-5" />}
+                          {item.name === "Home" && (
+                            <HomeIcon className="w-5 h-5" />
+                          )}
+                          {item.name === "Company" && (
+                            <BuildingOfficeIcon className="w-5 h-5" />
+                          )}
+                          {item.name === "Services" && (
+                            <WrenchScrewdriverIcon className="w-5 h-5" />
+                          )}
+                          {item.name === "Blog" && (
+                            <NewspaperIcon className="w-5 h-5" />
+                          )}
+                          {item.name === "Shop" && (
+                            <ShoppingBagIcon className="w-5 h-5" />
+                          )}
+                          {item.name === "About" && (
+                            <InformationCircleIcon className="w-5 h-5" />
+                          )}
                           <span>{item.name}</span>
                         </div>
                         <RiArrowDropDownLine
@@ -368,11 +544,21 @@ export default function Navbar() {
                               className="flex items-center gap-2 text-gray-600 hover:text-[#E4a400]"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
-                              {subItem.name === "Team" && <UserGroupIcon className="w-5 h-5" />}
-                              {subItem.name === "Mission" && <FlagIcon className="w-5 h-5" />}
-                              {subItem.name === "Contact" && <ChatBubbleLeftIcon className="w-5 h-5" />}
-                              {subItem.name === "Residential Waste" && <TrashIcon className="w-5 h-5" />}
-                              {subItem.name === "Industrial Waste" && <BuildingLibraryIcon className="w-5 h-5" />}
+                              {subItem.name === "Team" && (
+                                <UserGroupIcon className="w-5 h-5" />
+                              )}
+                              {subItem.name === "Mission" && (
+                                <FlagIcon className="w-5 h-5" />
+                              )}
+                              {subItem.name === "Contact" && (
+                                <ChatBubbleLeftIcon className="w-5 h-5" />
+                              )}
+                              {subItem.name === "Residential Waste" && (
+                                <TrashIcon className="w-5 h-5" />
+                              )}
+                              {subItem.name === "Industrial Waste" && (
+                                <BuildingLibraryIcon className="w-5 h-5" />
+                              )}
                               <span>{subItem.name}</span>
                             </Link>
                           ))}
@@ -386,14 +572,47 @@ export default function Navbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item.name === "Home" && <HomeIcon className="w-5 h-5" />}
-                      {item.name === "Blog" && <NewspaperIcon className="w-5 h-5" />}
-                      {item.name === "Shop" && <ShoppingBagIcon className="w-5 h-5" />}
-                      {item.name === "About" && <InformationCircleIcon className="w-5 h-5" />}
+                      {item.name === "Blog" && (
+                        <NewspaperIcon className="w-5 h-5" />
+                      )}
+                      {item.name === "Shop" && (
+                        <ShoppingBagIcon className="w-5 h-5" />
+                      )}
+                      {item.name === "About" && (
+                        <InformationCircleIcon className="w-5 h-5" />
+                      )}
                       <span>{item.name}</span>
                     </Link>
                   )}
                 </div>
               ))}
+
+              {/* Mobile Profile Actions */}
+              {isLoggedIn && (
+                <div className="mt-4 border-t pt-4">
+                  <button
+                    onClick={() => handleProfileNavigation("/profile")}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-[#E4a400] w-full"
+                  >
+                    <RiUserLine className="w-5 h-5" />
+                    <span>My Profile</span>
+                  </button>
+                  <button
+                    onClick={() => handleProfileNavigation("/settings")}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-[#E4a400] w-full"
+                  >
+                    <RiSettings3Line className="w-5 h-5" />
+                    <span>Settings</span>
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-800 w-full"
+                  >
+                    <RiLogoutBoxLine className="w-5 h-5" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
             </nav>
           </div>
         </div>

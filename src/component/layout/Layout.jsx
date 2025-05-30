@@ -12,7 +12,6 @@ const Layout = () => {
   const hideLayoutOnPaths = [
     "/admin/dashboard",
     "/team/dashboard",
-    "/user/dashboard",
   ];
 
   const shouldHideLayout = hideLayoutOnPaths.includes(location.pathname);

@@ -175,7 +175,7 @@ const ContactMapSection = () => {
         </div>
 
         {/* Desktop Contact Form */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 p-8 rounded-xl shadow-2xl w-[420px] z-20 backdrop-blur-sm">
+        {/* <div className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 p-8 rounded-xl shadow-2xl w-[420px] z-20 backdrop-blur-sm">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Request Service</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -218,7 +218,7 @@ const ContactMapSection = () => {
               Schedule Pickup
             </button>
           </form>
-        </div>
+        </div> */}
       </div>
     </div>
   );
