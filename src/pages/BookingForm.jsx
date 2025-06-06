@@ -115,9 +115,8 @@ export default function BookingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
               >
-                <h2 className="text-3xl font-bold text-gray-800 mb-6">
-                  Get An Appointment{" "}
-                  <span className="ml-2 animate-bounce">📅</span>
+                <h2 className="text-3xl text-center font-bold text-gray-800 mb-6">
+                  Get An Appointment
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
